@@ -1,0 +1,49 @@
+{
+    "name": "Default Generation Workflow",
+    "description": "Standard image generation workflow using SDXL",
+    "nodes": {
+        "KSampler": {
+            "class_type": "KSampler",
+            "inputs": {
+                "seed": 0,
+                "steps": 20,
+                "cfg": 7,
+                "sampler_name": "euler_ancestral",
+                "scheduler": "normal",
+                "denoise": 1,
+                "model": ["CLIPTextEncode", 0],
+                "positive": ["CLIPTextEncode", 0],
+                "negative": ["CLIPTextEncode", 1],
+                "latent_image": ["EmptyLatentImage", 0]
+            }
+        },
+        "CLIPTextEncode": {
+            "class_type": "CLIPTextEncode",
+            "inputs": {
+                "clip": ["CheckpointLoaderSimple", 0],
+                "text": ""
+            }
+        },
+        "CheckpointLoaderSimple": {
+            "class_type": "CheckpointLoaderSimple",
+            "inputs": {
+                "ckpt_name": "sdxl_base_1.0.safetensors"
+            }
+        },
+        "EmptyLatentImage": {
+            "class_type": "EmptyLatentImage",
+            "inputs": {
+                "width": 512,
+                "height": 512,
+                "batch_size": 1
+            }
+        },
+        "VAEDecode": {
+            "class_type": "VAEDecode",
+            "inputs": {
+                "samples": ["KSampler", 0],
+                "vae": ["CheckpointLoaderSimple", 2]
+            }
+        }
+    }
+} 
